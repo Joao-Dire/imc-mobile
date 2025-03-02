@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fiap.imc.ui.theme.IMCTheme
+import br.com.fiap.imcapp.alteraCor
 import br.com.fiap.imcapp.calcularIMC
 import br.com.fiap.imcapp.determinarClassificacaoIMC
 
@@ -78,7 +79,7 @@ fun IMCScreen() {
     val statusImc = remember {
         mutableStateOf("")
     }
-
+    
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             //---header----
@@ -212,7 +213,7 @@ fun IMCScreen() {
                     .fillMaxWidth()
                     .height(200.dp)
                     .padding(horizontal = 32.dp, vertical = 24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xff329F6B)),
+                colors = CardDefaults.cardColors(containerColor = alteraCor(imc.value)),
                 elevation = CardDefaults.cardElevation(4.dp),
                 //border = BorderStroke(width = 1.dp, Color(0xffed145b))
             ) {

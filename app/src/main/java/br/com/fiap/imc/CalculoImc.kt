@@ -1,5 +1,6 @@
 package br.com.fiap.imcapp
 
+import androidx.compose.ui.graphics.Color
 import kotlin.math.pow
 
 fun calcularIMC(altura: Double, peso: Double) : Double {
@@ -18,4 +19,17 @@ fun determinarClassificacaoIMC(imc: Double): String {
     } else if (imc >= 35.0 && imc < 40.0) {
         "Obesidade Grau II"
     } else {"Obesidade Grau III"}
+}
+
+
+fun alteraCor(imc: Double): Color {
+    return if(imc < 18.5) {
+        Color.Blue
+    } else if (imc >= 18.5 && imc < 25.0) {
+        Color.Green
+    } else if (imc >= 25.0 && imc < 30.0) {
+        Color.Yellow
+    } else {
+        Color.Red
+    }
 }
