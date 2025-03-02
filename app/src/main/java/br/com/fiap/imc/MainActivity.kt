@@ -3,7 +3,6 @@ package br.com.fiap.imc
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -38,10 +37,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fiap.imc.ui.theme.IMCTheme
+import br.com.fiap.imcapp.calcularIMC
+import br.com.fiap.imcapp.determinarClassificacaoIMC
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,8 +49,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             IMCTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
                 }
                 IMCScreen()
             }
@@ -61,185 +63,188 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun IMCScreen() {
 
-    var peso = remember {
+    val peso = remember {
         mutableStateOf("")
     }
 
-    var altura = remember {
+    val altura = remember {
         mutableStateOf("")
     }
 
-    var calcular = {
+    val imc = remember {
+        mutableStateOf(0.00)
     }
+
+    val statusImc = remember {
+        mutableStateOf("")
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             //---header----
             Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                            .fillMaxWidth()
-                            .height(160.dp)
-                            .background(colorResource(id = R.color.vermelho))
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(160.dp)
+                    .background(colorResource(id = R.color.vermelho))
             ) {
                 Image(
-                        painter = painterResource(id = R.drawable.imc),
-                        contentDescription = "logo",
-                        modifier = Modifier
-                                .size(60.dp)
-                                .padding(top = 16.dp)
+                    painter = painterResource(id = R.drawable.imc),
+                    contentDescription = "logo",
+                    modifier = Modifier
+                        .size(60.dp)
+                        .padding(top = 16.dp)
                 )
                 Text(
-                        text = "Calculadora IMC",
-                        fontSize = 24.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(top = 12.dp, bottom = 24.dp)
+                    text = "Calculadora IMC",
+                    fontSize = 24.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 12.dp, bottom = 24.dp)
                 )
             }
 // --- formulário
             Column(
-                    modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 32.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp)
             ) {
                 Card(
-                        modifier = Modifier
-                                .offset(y = (-30).dp)
-                                .fillMaxWidth(),
-                        colors = CardDefaults
-                                .cardColors(containerColor = Color(0xfff9f6f6)),
-                        elevation = CardDefaults.cardElevation(4.dp)
+                    modifier = Modifier
+                        .offset(y = (-30).dp)
+                        .fillMaxWidth(),
+                    colors = CardDefaults
+                        .cardColors(containerColor = Color(0xfff9f6f6)),
+                    elevation = CardDefaults.cardElevation(4.dp)
                 ) {
                     Column(
-                            modifier = Modifier.padding(
-                                    vertical = 16.dp,
-                                    horizontal = 32.dp
-                            )
+                        modifier = Modifier.padding(
+                            vertical = 16.dp,
+                            horizontal = 32.dp
+                        )
                     ) {
                         Text(
-                                text = "Seus dados",
-                                modifier = Modifier.fillMaxWidth(),
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = colorResource(id = R.color.vermelho),
-                                textAlign = TextAlign.Center
+                            text = "Seus dados",
+                            modifier = Modifier.fillMaxWidth(),
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = colorResource(id = R.color.vermelho),
+                            textAlign = TextAlign.Center
                         )
                         Spacer(modifier = Modifier.height(32.dp))
                         Text(
-                                text = "Seu peso",
-                                modifier = Modifier.padding(bottom = 8.dp),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Normal,
-                                color = colorResource(id = R.color.vermelho)
+                            text = "Seu peso",
+                            modifier = Modifier.padding(bottom = 8.dp),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = colorResource(id = R.color.vermelho)
                         )
                         OutlinedTextField(
-                                value = peso.value,
-                                onValueChange = {
-                                    peso.value = it
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                placeholder = {
-                                    Text(text = "Seu peso em Kg.")
-                                },
-                                colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = colorResource(id = R.color.vermelho),
-                                        focusedBorderColor = colorResource(id = R.color.vermelho)
-                                ),
-                                shape = RoundedCornerShape(16.dp),
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                            value = peso.value,
+                            onValueChange = {
+                                peso.value = it
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            placeholder = {
+                                Text(text = "Seu peso em Kg.")
+                            },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedBorderColor = colorResource(id = R.color.vermelho),
+                                focusedBorderColor = colorResource(id = R.color.vermelho)
+                            ),
+                            shape = RoundedCornerShape(16.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                                text = "Sua altura",
-                                modifier = Modifier.padding(bottom = 8.dp),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Normal,
-                                color = colorResource(id = R.color.vermelho)
+                            text = "Sua altura",
+                            modifier = Modifier.padding(bottom = 8.dp),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = colorResource(id = R.color.vermelho)
                         )
                         OutlinedTextField(
-                                value = altura.value,
-                                onValueChange = {
-                                    altura.value = it
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                placeholder = {
-                                    Text(
-                                            text = "Sua altura em cm."
-                                    )
-                                },
-                                colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = colorResource(id = R.color.vermelho),
-                                        focusedBorderColor = colorResource(id = R.color.vermelho)
-                                ),
-                                shape = RoundedCornerShape(16.dp),
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                            value = altura.value,
+                            onValueChange = {
+                                altura.value = it
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            placeholder = {
+                                Text(
+                                    text = "Sua altura em cm."
+                                )
+                            },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedBorderColor = colorResource(id = R.color.vermelho),
+                                focusedBorderColor = colorResource(id = R.color.vermelho)
+                            ),
+                            shape = RoundedCornerShape(16.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
-                                onClick = {},
-                                modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(48.dp),
-                                shape = RoundedCornerShape(16.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.vermelho))
-                        ) {
+                            onClick = {
+                                imc.value = calcularIMC(
+                                    altura = altura.value.toDouble(),
+                                    peso = peso.value.toDouble()
+                                )
+                                statusImc.value = determinarClassificacaoIMC(imc.value)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.vermelho))
+                        ){
                             Text(
-                                    text = "CALCULAR",
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White,
-                                    fontSize = 14.sp
+                                text = "CALCULAR",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                fontSize = 14.sp
                             )
                         }
                     }
                 }
             }
-            // --- card resultado
             Card(
-                    modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .padding(horizontal = 32.dp, vertical = 24.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xff329F6B)),
-                    elevation = CardDefaults.cardElevation(4.dp),
-                    //border = BorderStroke(width = 1.dp, Color(0xffed145b))
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .padding(horizontal = 32.dp, vertical = 24.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xff329F6B)),
+                elevation = CardDefaults.cardElevation(4.dp),
+                //border = BorderStroke(width = 1.dp, Color(0xffed145b))
             ) {
                 Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                                .padding(horizontal = 32.dp)
-                                .fillMaxSize()
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(horizontal = 32.dp)
+                        .fillMaxSize()
                 ) {
                     Column() {
                         Text(
-                                text = "Resultado",
-                                color = Color.White,
-                                fontSize = 14.sp
+                            text = "Resultado",
+                            color = Color.White,
+                            fontSize = 14.sp
                         )
                         Text(
-                                text = "Peso Ideal.",
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White,
-                                fontSize = 20.sp
+                            text = statusImc.value,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            fontSize = 20.sp
                         )
                     }
                     Text(
-                            text = "23.2",
-                            modifier = Modifier.fillMaxWidth(),
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            fontSize = 36.sp,
-                            textAlign = TextAlign.End
+                        text = String.format("%.1f", imc.value),
+                        modifier = Modifier.fillMaxWidth(),
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        fontSize = 36.sp,
+                        textAlign = TextAlign.End
                     )
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    IMCTheme {
-        IMCScreen()
     }
 }
